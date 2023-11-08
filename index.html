@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/date-fns"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+    <script src="http://api.pioupiou.fr/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+
+    <h1>Flugwetter am Rebberg:</h1>
+    <label for="beginWeatherData">Begin der Winddaten:</label>
+
+    <input type="datetime-local" id="beginWeatherData" min="2023-10-15T00:00" />
+    <label for="endWeatherData">Ende der Winddaten:</label>
+    <input type="datetime-local" id="endWeatherData" min="2023-10-15T00:00" />
+
+    <div style="width: 75%;">
+    <canvas id="myChart"></canvas>
+    <canvas id="myCanvas" height="25"></canvas>
+    </div>
+
+    <script src="main.js" async></script>
+<!-- //   var socket = io.connect('http://api.pioupiou.fr/v1/push');
+
+// socket.on("connect", function () {
+//   //socket.emit("subscribe", "all");
+//   socket.emit("subscribe", 1339); // station n° 1
+//   //socket.emit("unsubscribe", "all");
+// });
+
+// socket.on("error", function (data) {
+//   console.log("error" + data);
+// });
+// socket.on("status", function (data) {
+//   console.log("status" +data);
+// });
+// socket.on("measurement", function (data) {
+//   console.log("measurement" + data);
+// });
+// socket.on("location", function (data) {
+//   console.log("location" + data);
+// }); -->
+
+
+
+</body>
+
+</html>

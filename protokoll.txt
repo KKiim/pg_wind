@@ -1,0 +1,5 @@
+06.11.2023 kr
+    Idee: Windrichtung in abweichung von der idealen windrichtung als graph darstellen.
+        - oder pfeile unter dem graph
+        - oder farbskala
+    Idee: Biliothek Guter Flugtage eventuell mit Link zu Fluegen an dem Tag.
