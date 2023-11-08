@@ -31,7 +31,7 @@ function fetchWindData(startDate, endDate) {
 
 
 
-  fetch("http://api.pioupiou.fr/v1/archive/1339?start=" + startDate + "&stop=" + endDate)
+  fetch("https://api.pioupiou.fr/v1/archive/1339?start=" + startDate + "&stop=" + endDate)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
