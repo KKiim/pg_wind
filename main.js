@@ -20,10 +20,7 @@ let myData = {
 
 
 function fetchWindData(startDate, endDate) {
-
-
-  console.log("fetchWindData startDate: " + startDate + " endDate: " + endDate);
-
+  //console.log("fetchWindData startDate: " + startDate + " endDate: " + endDate);
 
   if (!endDate) {
     endDate = new Date(); // current Date
@@ -52,10 +49,13 @@ function fetchWindData(startDate, endDate) {
 
 
 
-// Create a new Date object for the current date and time
-var currentDate = new Date();
-// Subtract one day (24 hours) from the current date
-currentDate.setHours(currentDate.getHours() - 3);
+// Create a new Date object to get the current date and time
+const currentDate = new Date();
+
+// Set the time to 6 o'clock
+currentDate.setHours(6, 0, 0, 0);
+
+//currentDate.setHours(currentDate.getHours() - 3);
 fetchWindData(currentDate)
 
 
@@ -81,14 +81,8 @@ ewd.addEventListener("change", function () {
 
 function drawChart(data) {
 
-
   let xValues = [];
   let yValues = [];
-
-  // let blue_l  = "166,206,227"
-  // let blue_d  = "31,120,180"
-  // let green_l = "178,223,138"
-  // let green_d = "51,160,44"
 
   let colors = ["166,206,227", "31,120,180", "178,223,138", "51,160,44", "251,154,153", "227,26,28", "253,191,111", "255,127,0", "202,178,214", "106,61,154", "255,255,153", "177,89,40"]
 
@@ -138,18 +132,24 @@ function drawChart(data) {
       scales: {
         x: {
           type: 'time',
-          unit: 'day',
-          displayFormats: {
-            day: 'MMM DD HH'
+          time: {
+            displayFormats: {
+              day: 'dd.MM',
+              hour: 'HH:00',
+              minute: 'HH:mm'
+            },
+             tooltipFormat:'HH:mm dd.MM.yyyy'
           },
           ticks: {
             source: 'auto',
-            maxTicksLimit: 12,
+//            maxTicksLimit: 6,
             autoSkip: true
-          }
+          },
+//          maxRotation: 0 does not work
         },
         y: {
-          beginAtZero: true
+          beginAtZero: true,
+          suggestedMax: 35
         }
       }
       //  scales: {
@@ -197,49 +197,127 @@ function drawChart(data) {
   drawWindDirChart(windData.data)
 }
 
-function degToColor(deg){
+function degToColor(dataRow) {
+  let deg = dataRow[6]
   let deltaDeg = 180
   if (deg > 45) deltaDeg = deg - 225;
   if (deg < 45) deltaDeg = 135 + deg;
 
   if (deltaDeg > 90 || deltaDeg < - 90) {
-
-    console.log("deltaDeg: " + deltaDeg)
     return '#000000'
   }
 
   colorIndex = Math.round((deltaDeg / 90) * 4) + 4
 
-  colors = ['#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788']
+  colors = ['#b35806', '#e08214', '#fdb863', '#fee0b6', '#f7f7f7', '#d8daeb', '#b2abd2', '#8073ac', '#542788']
 
-
-  console.log(deg + ' : ' + deltaDeg + ' : ' + colorIndex + ' : ' + colors[colorIndex])
-
-
+  //  console.log(deg + ' : ' + deltaDeg + ' : ' + colorIndex + ' : ' + colors[colorIndex])
   return colors[colorIndex]
 }
 
+
+function fillColorCanvas(data, canvasId, dataToCol) {
+    // Get the canvas element and its 2d context
+    var canvas = document.getElementById(canvasId);
+
+    var ctx = canvas.getContext("2d");
+    ctx.canvas.width = window.innerWidth * 0.75;
+
+    // Define colors for the blocks
+    var colors = []
+
+    for (d of data) {
+      colors.push(dataToCol(d))         //degToColor(d[6]))
+    }
+
+    // colors = ['#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788'];
+
+    // Calculate block width based on the canvas width and the number of blocks
+    var blockWidth = canvas.width / colors.length;
+
+    // Loop through the colors and draw the blocks
+    for (var i = 0; i < colors.length; i++) {
+      ctx.fillStyle = colors[i];
+      ctx.fillRect(i * blockWidth, 0, blockWidth, canvas.height);
+    }
+}
+
 function drawWindDirChart(data) {
-      // Get the canvas element and its 2d context
-      var canvas = document.getElementById("myCanvas");
+  fillColorCanvas(data, "myCanvas", degToColor)
+  fillColorCanvas(data, "myCanvas1", qualiToColor)
+}
 
-      var ctx = canvas.getContext("2d");
-      ctx.canvas.width  = window.innerWidth * 0.75;
+function qualiToColor(dataRow) {
+  let qualiScore = getQualiForPointInTime(dataRow)
+  let colors = ['#a50026','#d73027','#f46d43','#fdae61','#fee08b','#ffffbf','#d9ef8b','#a6d96a','#66bd63','#1a9850','#006837']
 
-      // Define colors for the blocks
-      var colors = [] //['#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788'];
+  if (qualiScore >= 0 && qualiScore <= 1) {
+    return colors[Math.round(qualiScore * 10)]
+  } else {
+    return '#000000'
+  }
+}
 
-      for ( d of data) {
-        colors.push(degToColor(d[6]))
-      }
+function getQualiForPointInTime(dataRow) {
+  const min = dataRow[3]
+  const avg = dataRow[4]
+  const max = dataRow[5]
+  const deg = dataRow[6]
 
-      // Calculate block width based on the canvas width and the number of blocks
-      var blockWidth = canvas.width / colors.length;
+  min_score = 0
+  avg_score = 0
+  max_score = 0
+  deg_score = 0
 
-      // Loop through the colors and draw the blocks
-      for (var i = 0; i < colors.length; i++) {
-        ctx.fillStyle = colors[i];
-        ctx.fillRect(i * blockWidth, 0, blockWidth, canvas.height);
-      }
+  if (min < 10) {
+    min_score = min / 10
+  } else {
+    min_score = 1
+  }
+
+  if (avg > 30) {
+    avg_score = 0
+  } else if (avg > 20 ) {
+    avg_score = 1 - ((avg - 20) / 10)
+  } else if (avg > 15) {
+    avg_score = 1
+  } else {
+    avg_score = avg / 15
+  }
+
+  if (max > 40) {
+    max_score = 0
+  } else if (max > 25) {
+    max_score = 1 - ((max - 25) / 15)
+  } else {
+    max_score = 1
+  }
+
+
+  deg_score = 1 - getPenalty(deg)
+
+  //console.log("min:" + min + " avg:" + avg + " max:" + max + " deg:" + deg)
+  //console.log("min_score:" + min_score + " avg_score:" + avg_score + " max_score:" + max_score + " deg_score:" + deg_score)
+
+  return ( min_score * avg_score * max_score * deg_score * deg_score )
+}
+
+function getPenalty(deg) {
+  let penalty = 0
+  let deltaDeg = 180
+  if (deg > 45) deltaDeg = deg - 225;
+  if (deg < 45) deltaDeg = 135 + deg;
+
+  if (deltaDeg > 90 || deltaDeg < - 90) {
+    return 1
+  }
+
+  return penalty = Math.abs((deltaDeg / 90)) // Wert zwischen 0 und 1
+}
+
+function drawWindQualiChart() {
+
+  getQualiForPointInTime()
+
 }
 
