@@ -152,46 +152,6 @@ function drawChart(data) {
           suggestedMax: 35
         }
       }
-      //  scales: {
-      //     x: {
-      //         type: 'time',
-      //         time: {
-      //             unit: 'day',
-      //             displayFormats: {
-      //                 day: 'MMM D'
-      //             },
-      //         },
-      //         title: {
-      //             display: true,
-      //             text: 'Date'
-      //         }
-      //     },
-      //     y: {
-      //         title: {
-      //             display: true,
-      //             text: 'Temperature (°C)'
-      //         }
-      //     }
-      // },
-      // scales: {
-      //   xAxes: [
-      //     {
-      //       ticks: {
-      //         callback: (val) => (new Date(val)).getDate().toString().padStart(2, '0') + " " + (new Date(val)).getHours().toString().padStart(2, '0') + ":" + (new Date(val)).getMinutes().toString().padStart(2, '0')  // or a different way to convert timestamp to date
-      //       },
-      //       // type: 'time',
-      //       // time: {
-      //       //     unit: 'day',
-      //       //     displayFormats: {
-      //       //         day: 'MMM D'
-      //       //     },
-      //       // }
-      //     }
-      //   ]
-      // tooltips: {
-      //   position: 'nearest',
-      //   enabled: false // Enable tooltips on hover
-      // }
     }
   });
   drawWindDirChart(windData.data)
@@ -221,7 +181,12 @@ function fillColorCanvas(data, canvasId, dataToCol) {
     var canvas = document.getElementById(canvasId);
 
     var ctx = canvas.getContext("2d");
-    ctx.canvas.width = window.innerWidth * 0.75;
+
+    var xAxis = myChart.scales['x'];
+
+    let canWidth = xAxis.right - xAxis.left;
+
+    ctx.canvas.width = canWidth + xAxis.left
 
     // Define colors for the blocks
     var colors = []
@@ -233,12 +198,12 @@ function fillColorCanvas(data, canvasId, dataToCol) {
     // colors = ['#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788'];
 
     // Calculate block width based on the canvas width and the number of blocks
-    var blockWidth = canvas.width / colors.length;
+    var blockWidth = canWidth / colors.length;
 
     // Loop through the colors and draw the blocks
     for (var i = 0; i < colors.length; i++) {
       ctx.fillStyle = colors[i];
-      ctx.fillRect(i * blockWidth, 0, blockWidth, canvas.height);
+      ctx.fillRect(xAxis.left + i * blockWidth, 0, blockWidth, canvas.height);
     }
 }
 
@@ -303,7 +268,6 @@ function getQualiForPointInTime(dataRow) {
 }
 
 function getPenalty(deg) {
-  let penalty = 0
   let deltaDeg = 180
   if (deg > 45) deltaDeg = deg - 225;
   if (deg < 45) deltaDeg = 135 + deg;
