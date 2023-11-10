@@ -277,16 +277,8 @@ function getQualiForPointInTime(dataRow) {
 }
 
 
-let count = 0
 function onResize() {
-  let canvases = ["myCanvas","myCanvas1"]
-  for(let canv of canvases) {
-    let canvas = document.getElementById(canv);
-    canvas.width = window.innerWidth;
-    //canv.height = window.innerHeight;
-  }
   drawWindDirChart()
-  console.log("OnResize :)" + count++)
 }
 
 function getPenalty(deg) {
