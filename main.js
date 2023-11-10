@@ -105,12 +105,24 @@ function drawChart() {
       yValues.push(d[i])
     }
 
+    let myBackgroundColor = {
+      wind_speed_min : "166,206,227,0.5",
+      wind_speed_avg : "51,160,44,0",
+      wind_speed_max : "166,206,227,0.5"
+    }
+
+    let myBorderColor = {
+      wind_speed_min : "166,206,227,0",
+      wind_speed_avg : "51,160,44,1",
+      wind_speed_max : "166,206,227,0"
+    }
+
     dataset = {
       label: windData.legend[i],
-      backgroundColor: "rgba(" + colors[(i - 3) * 2] + ",1.0)",
-      borderColor: "rgba(" + colors[(i - 3) * 2 + 1] + ",1.0)",
-      lineTension: 0,
-      fill: 'none',
+      backgroundColor: "rgba(" + myBackgroundColor[windData.legend[i]] + ")",
+      borderColor: "rgba(" + myBorderColor[windData.legend[i]] + ")",
+     // lineTension: 0,
+      fill: 1,
       data: yValues,
       pointRadius: 0,
       pointHitRadius: 100,
@@ -134,6 +146,9 @@ function drawChart() {
       datasets: datasets
     },
     options: {
+      legend: {
+        display: false, // Hide the legend
+    },
       responsive: true,
       aspectRatio: 2,
       scales: {
@@ -147,12 +162,12 @@ function drawChart() {
             },
              tooltipFormat:'HH:mm dd.MM.yyyy'
           },
-          ticks: {
-            source: 'auto',
-//            maxTicksLimit: 6,
-            autoSkip: true
-          },
-//          maxRotation: 0 does not work
+//           ticks: {
+//             source: 'auto',
+// //            maxTicksLimit: 6,
+//             autoSkip: true
+//           },
+// //          maxRotation: 0 does not work
         },
         y: {
           beginAtZero: true,
