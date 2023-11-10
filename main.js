@@ -106,14 +106,14 @@ function drawChart() {
     }
 
     let myBackgroundColor = {
-      wind_speed_min : "166,206,227,0.5",
+      wind_speed_min : "166,206,227,0.6",
       wind_speed_avg : "51,160,44,0",
-      wind_speed_max : "166,206,227,0.5"
+      wind_speed_max : "166,206,227,0.6"
     }
 
     let myBorderColor = {
       wind_speed_min : "166,206,227,0",
-      wind_speed_avg : "51,160,44,1",
+      wind_speed_avg : "31,120,180,1",
       wind_speed_max : "166,206,227,0"
     }
 
