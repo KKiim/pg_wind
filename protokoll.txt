@@ -1,3 +1,12 @@
+07.11.2023 kr
+
+ok   Bugfix Zeitauswahl geht manchmal nicht richtig
+ok   Bugfix OnResize window auch untere Charts anpassen
+ok   aspect Ratio
+
+idee: div dynmischer große vor chart damit dieser an richtiger pos
+idee: Background Color im Chart
+
 06.11.2023 kr
     Idee: Windrichtung in abweichung von der idealen windrichtung als graph darstellen.
         - oder pfeile unter dem graph

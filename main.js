@@ -19,16 +19,47 @@ let myData = {
 //********* */ 3.11 War eine Topflugtag! **********************
 
 
-function fetchWindData(startDate, endDate) {
-  //console.log("fetchWindData startDate: " + startDate + " endDate: " + endDate);
+var myChart;
+let windData = {}
+let startDate = new Date()
+let endDate   = new Date()
+const bwd = document.getElementById("beginWeatherData")
+const ewd = document.getElementById("endWeatherData")
+
+
+init()
+
+function init(){
+  //startDate.setHours(currentDate.getHours() - 3);
+  startDate.setHours(6, 0, 0, 0)
+
+  bwd.value = toLocal(startDate)
+  ewd.value = toLocal(endDate)
+
+  bwd.addEventListener("change", function () {
+    startDate = bwd.value
+    fetchWindData();
+  });
+
+  ewd.addEventListener("change", function () {
+    endDate = ewd.value
+    fetchWindData();
+  });
+
+  fetchWindData()
+}
+
+function fetchWindData() {
+  console.log("fetchWindData startDate: " + startDate + " endDate: " + endDate);
 
   if (!endDate) {
     endDate = new Date(); // current Date
   }
 
+  let UTCstart = toUTC(startDate)
+  let UTCend   = toUTC(endDate)
 
-
-  fetch("https://api.pioupiou.fr/v1/archive/1339?start=" + startDate + "&stop=" + endDate)
+  fetch("https://api.pioupiou.fr/v1/archive/1339?start=" + UTCstart + "&stop=" + UTCend)
     .then(response => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -37,56 +68,28 @@ function fetchWindData(startDate, endDate) {
     })
     .then(data => {
       // Use the 'data' object, which contains the response from the API
-      drawChart(data);
+      windData = data
+      drawChart();
     })
     .catch(error => {
       console.error('Fetch error:', error);
     });
 }
 
-
-
-
-
-
-// Create a new Date object to get the current date and time
-const currentDate = new Date();
-
-// Set the time to 6 o'clock
-currentDate.setHours(6, 0, 0, 0);
-
-//currentDate.setHours(currentDate.getHours() - 3);
-fetchWindData(currentDate)
-
-
-var myChart;
-
 function toUTC(val) {
   return (new Date(val + '')).toISOString()
 }
 
+function toLocal(val) {
+  return val.toLocaleString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
+}
 
-const bwd = document.getElementById("beginWeatherData")
-
-bwd.addEventListener("change", function () {
-  fetchWindData(toUTC(bwd.value));
-});
-
-const ewd = document.getElementById("endWeatherData")
-
-ewd.addEventListener("change", function () {
-  fetchWindData(toUTC(bwd.value), toUTC(ewd.value));
-});
-
-
-function drawChart(data) {
+function drawChart() {
 
   let xValues = [];
   let yValues = [];
 
   let colors = ["166,206,227", "31,120,180", "178,223,138", "51,160,44", "251,154,153", "227,26,28", "253,191,111", "255,127,0", "202,178,214", "106,61,154", "255,255,153", "177,89,40"]
-
-  let windData = data
 
   datasets = []
 
@@ -109,7 +112,9 @@ function drawChart(data) {
       lineTension: 0,
       fill: 'none',
       data: yValues,
-      pointRadius: 0
+      pointRadius: 0,
+      pointHitRadius: 100,
+      pointHoverRadius: 10
     }
     datasets.push(dataset)
   }
@@ -129,6 +134,8 @@ function drawChart(data) {
       datasets: datasets
     },
     options: {
+      responsive: true,
+      aspectRatio: 2,
       scales: {
         x: {
           type: 'time',
@@ -154,8 +161,11 @@ function drawChart(data) {
       }
     }
   });
-  drawWindDirChart(windData.data)
+  drawWindDirChart()
 }
+
+window.addEventListener('resize', onResize);
+//window.addEventListener('load', onResize);
 
 function degToColor(dataRow) {
   let deg = dataRow[6]
@@ -174,7 +184,6 @@ function degToColor(dataRow) {
   //  console.log(deg + ' : ' + deltaDeg + ' : ' + colorIndex + ' : ' + colors[colorIndex])
   return colors[colorIndex]
 }
-
 
 function fillColorCanvas(data, canvasId, dataToCol) {
     // Get the canvas element and its 2d context
@@ -207,7 +216,8 @@ function fillColorCanvas(data, canvasId, dataToCol) {
     }
 }
 
-function drawWindDirChart(data) {
+function drawWindDirChart() {
+  let data = windData.data
   fillColorCanvas(data, "myCanvas", degToColor)
   fillColorCanvas(data, "myCanvas1", qualiToColor)
 }
@@ -258,13 +268,25 @@ function getQualiForPointInTime(dataRow) {
     max_score = 1
   }
 
-
   deg_score = 1 - getPenalty(deg)
 
   //console.log("min:" + min + " avg:" + avg + " max:" + max + " deg:" + deg)
   //console.log("min_score:" + min_score + " avg_score:" + avg_score + " max_score:" + max_score + " deg_score:" + deg_score)
 
   return ( min_score * avg_score * max_score * deg_score * deg_score )
+}
+
+
+let count = 0
+function onResize() {
+  let canvases = ["myCanvas","myCanvas1"]
+  for(let canv of canvases) {
+    let canvas = document.getElementById(canv);
+    canvas.width = window.innerWidth;
+    //canv.height = window.innerHeight;
+  }
+  drawWindDirChart()
+  console.log("OnResize :)" + count++)
 }
 
 function getPenalty(deg) {
@@ -276,12 +298,5 @@ function getPenalty(deg) {
     return 1
   }
 
-  return penalty = Math.abs((deltaDeg / 90)) // Wert zwischen 0 und 1
+  return Math.abs((deltaDeg / 90)) // Wert zwischen 0 und 1
 }
-
-function drawWindQualiChart() {
-
-  getQualiForPointInTime()
-
-}
-
