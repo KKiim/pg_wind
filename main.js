@@ -171,22 +171,22 @@ function drawChart() {
         },
         y: {
           beginAtZero: true,
-          position: 'right',
+          position: 'left',
           suggestedMax: 35
         }
         ,
-        y1: {
-          display: true,
-          position: 'left',
+        // y1: {
+        //   display: true,
+        //   position: 'left',
 
-          // grid line settings
-          grid: {
-            drawOnChartArea: false, // only want the grid lines for one axis to show up
-          },
-          beginAtZero: true,
-          suggestedMax: 35
+        //   // grid line settings
+        //   grid: {
+        //     drawOnChartArea: false, // only want the grid lines for one axis to show up
+        //   },
+        //   beginAtZero: true,
+        //   suggestedMax: 35
 
-        }
+        // }
       }
     }
   });
@@ -222,9 +222,13 @@ function fillColorCanvas(data, canvasId, dataToCol) {
 
     var xAxis = myChart.scales['x'];
 
-    let canWidth = xAxis.right - xAxis.left;
+    let canWidth = xAxis.width;
 
-    ctx.canvas.width = canWidth + xAxis.left
+    ctx.canvas.width = canWidth
+
+    ctx.canvas.height = 25
+
+    ctx.canvas.style.marginLeft = xAxis.left + "px"
 
     // Define colors for the blocks
     var colors = []
@@ -241,7 +245,7 @@ function fillColorCanvas(data, canvasId, dataToCol) {
     // Loop through the colors and draw the blocks
     for (var i = 0; i < colors.length; i++) {
       ctx.fillStyle = colors[i];
-      ctx.fillRect(xAxis.left + i * blockWidth, 0, blockWidth, canvas.height);
+      ctx.fillRect(i * blockWidth, 0, blockWidth, canvas.height);
     }
 }
 

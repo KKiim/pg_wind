@@ -1,3 +1,7 @@
+11.11.2023 kr
+
+idee: autorefresh
+
 07.11.2023 kr
 
 ok   Bugfix Zeitauswahl geht manchmal nicht richtig
