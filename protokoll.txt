@@ -1,6 +1,6 @@
 11.11.2023 kr
 
-idee: autorefresh
+todo: autorefresh check ob chart bis zum aktuellen zeitpunkt geht. scheint nur alle 10 minuten zu publishen?
 
 07.11.2023 kr
 

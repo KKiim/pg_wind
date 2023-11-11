@@ -22,14 +22,14 @@ let myData = {
 var myChart;
 let windData = {}
 let startDate = new Date()
-let endDate   = new Date()
+let endDate = new Date()
 const bwd = document.getElementById("beginWeatherData")
 const ewd = document.getElementById("endWeatherData")
 
 
 init()
 
-function init(){
+function init() {
   //startDate.setHours(currentDate.getHours() - 3);
   startDate.setHours(6, 0, 0, 0)
 
@@ -47,17 +47,18 @@ function init(){
   });
 
   fetchWindData()
+  intiLiveUpdate()
 }
 
 function fetchWindData() {
-  console.log("fetchWindData startDate: " + startDate + " endDate: " + endDate);
+  //console.log("fetchWindData startDate: " + startDate + " endDate: " + endDate);
 
   if (!endDate) {
     endDate = new Date(); // current Date
   }
 
   let UTCstart = toUTC(startDate)
-  let UTCend   = toUTC(endDate)
+  let UTCend = toUTC(endDate)
 
   fetch("https://api.pioupiou.fr/v1/archive/1339?start=" + UTCstart + "&stop=" + UTCend)
     .then(response => {
@@ -69,7 +70,7 @@ function fetchWindData() {
     .then(data => {
       // Use the 'data' object, which contains the response from the API
       windData = data
-      drawChart();
+      drawCharts();
     })
     .catch(error => {
       console.error('Fetch error:', error);
@@ -84,12 +85,12 @@ function toLocal(val) {
   return val.toLocaleString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-function drawChart() {
+function drawCharts() {
 
   let xValues = [];
   let yValues = [];
 
-  let colors = ["166,206,227", "31,120,180", "178,223,138", "51,160,44", "251,154,153", "227,26,28", "253,191,111", "255,127,0", "202,178,214", "106,61,154", "255,255,153", "177,89,40"]
+  //  let colors = ["166,206,227", "31,120,180", "178,223,138", "51,160,44", "251,154,153", "227,26,28", "253,191,111", "255,127,0", "202,178,214", "106,61,154", "255,255,153", "177,89,40"]
 
   datasets = []
 
@@ -106,22 +107,22 @@ function drawChart() {
     }
 
     let myBackgroundColor = {
-      wind_speed_min : "166,206,227,0.6",
-      wind_speed_avg : "51,160,44,0",
-      wind_speed_max : "166,206,227,0.6"
+      wind_speed_min: "166,206,227,0.6",
+      wind_speed_avg: "51,160,44,0",
+      wind_speed_max: "166,206,227,0.6"
     }
 
     let myBorderColor = {
-      wind_speed_min : "166,206,227,0",
-      wind_speed_avg : "31,120,180,1",
-      wind_speed_max : "166,206,227,0"
+      wind_speed_min: "166,206,227,0",
+      wind_speed_avg: "31,120,180,1",
+      wind_speed_max: "166,206,227,0"
     }
 
     dataset = {
       label: windData.legend[i],
       backgroundColor: "rgba(" + myBackgroundColor[windData.legend[i]] + ")",
       borderColor: "rgba(" + myBorderColor[windData.legend[i]] + ")",
-     // lineTension: 0,
+      // lineTension: 0,
       fill: 1,
       data: yValues,
       pointRadius: 0,
@@ -148,7 +149,7 @@ function drawChart() {
     options: {
       legend: {
         display: false, // Hide the legend
-    },
+      },
       responsive: true,
       aspectRatio: 2,
       scales: {
@@ -158,16 +159,17 @@ function drawChart() {
             displayFormats: {
               day: 'dd.MM',
               hour: 'HH:00',
-              minute: 'HH:mm'
+              minute: 'HH:mm',
+              second: 'HH:mm:ss'
             },
-             tooltipFormat:'HH:mm dd.MM.yyyy'
+            tooltipFormat: 'HH:mm dd.MM.yyyy'
           },
           ticks: {
             // source: 'auto',
             maxTicksLimit: 10,
             autoSkip: true
           },
-//          maxRotation: 0 does not work
+          //          maxRotation: 0 does not work
         },
         y: {
           beginAtZero: true,
@@ -215,38 +217,38 @@ function degToColor(dataRow) {
 }
 
 function fillColorCanvas(data, canvasId, dataToCol) {
-    // Get the canvas element and its 2d context
-    var canvas = document.getElementById(canvasId);
+  // Get the canvas element and its 2d context
+  var canvas = document.getElementById(canvasId);
 
-    var ctx = canvas.getContext("2d");
+  var ctx = canvas.getContext("2d");
 
-    var xAxis = myChart.scales['x'];
+  var xAxis = myChart.scales['x'];
 
-    let canWidth = xAxis.width;
+  let canWidth = xAxis.width;
 
-    ctx.canvas.width = canWidth
+  ctx.canvas.width = canWidth
 
-    ctx.canvas.height = 25
+  ctx.canvas.height = 25
 
-    ctx.canvas.style.marginLeft = xAxis.left + "px"
+  ctx.canvas.style.marginLeft = xAxis.left + "px"
 
-    // Define colors for the blocks
-    var colors = []
+  // Define colors for the blocks
+  var colors = []
 
-    for (d of data) {
-      colors.push(dataToCol(d))         //degToColor(d[6]))
-    }
+  for (d of data) {
+    colors.push(dataToCol(d))         //degToColor(d[6]))
+  }
 
-    // colors = ['#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788'];
+  // colors = ['#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788'];
 
-    // Calculate block width based on the canvas width and the number of blocks
-    var blockWidth = canWidth / colors.length;
+  // Calculate block width based on the canvas width and the number of blocks
+  var blockWidth = canWidth / colors.length;
 
-    // Loop through the colors and draw the blocks
-    for (var i = 0; i < colors.length; i++) {
-      ctx.fillStyle = colors[i];
-      ctx.fillRect(i * blockWidth, 0, blockWidth, canvas.height);
-    }
+  // Loop through the colors and draw the blocks
+  for (var i = 0; i < colors.length; i++) {
+    ctx.fillStyle = colors[i];
+    ctx.fillRect(i * blockWidth, 0, blockWidth, canvas.height);
+  }
 }
 
 function drawWindDirChart() {
@@ -257,7 +259,7 @@ function drawWindDirChart() {
 
 function qualiToColor(dataRow) {
   let qualiScore = getQualiForPointInTime(dataRow)
-  let colors = ['#a50026','#d73027','#f46d43','#fdae61','#fee08b','#ffffbf','#d9ef8b','#a6d96a','#66bd63','#1a9850','#006837']
+  let colors = ['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#d9ef8b', '#a6d96a', '#66bd63', '#1a9850', '#006837']
 
   if (qualiScore >= 0 && qualiScore <= 1) {
     return colors[Math.round(qualiScore * 10)]
@@ -285,7 +287,7 @@ function getQualiForPointInTime(dataRow) {
 
   if (avg > 30) {
     avg_score = 0
-  } else if (avg > 20 ) {
+  } else if (avg > 20) {
     avg_score = 1 - ((avg - 20) / 10)
   } else if (avg > 15) {
     avg_score = 1
@@ -306,7 +308,7 @@ function getQualiForPointInTime(dataRow) {
   //console.log("min:" + min + " avg:" + avg + " max:" + max + " deg:" + deg)
   //console.log("min_score:" + min_score + " avg_score:" + avg_score + " max_score:" + max_score + " deg_score:" + deg_score)
 
-  return ( min_score * avg_score * max_score * deg_score * deg_score )
+  return (min_score * avg_score * max_score * deg_score * deg_score)
 }
 
 
@@ -324,4 +326,29 @@ function getPenalty(deg) {
   }
 
   return Math.abs((deltaDeg / 90)) // Wert zwischen 0 und 1
+}
+
+
+function intiLiveUpdate() {
+  var socket = io.connect('http://api.pioupiou.fr/v1/push');
+
+  socket.on("connect", function () {
+    socket.emit("subscribe", 1339); // station n° 1
+  });
+  console.log("subscribed!")
+
+  socket.on("measurement", function (data) {
+    console.log("measurement" + data);
+    addLiveData(data)
+  });
+
+}
+
+function addLiveData(data) {
+  let dataRow = [data.date, 47.769291, 8.968063, data.wind_speed_min, data.wind_speed_avg, data.wind_speed_max, data.wind_heading, null]
+
+  console.log("Added Data " + data.date + " data.station_id " + data.station_id + " data.wind_speed_avg " + data.wind_speed_avg + " data.wind_heading " + data.wind_heading)
+  //let dataRow = [data.date, data.pressure, data.station_id, data.wind_speed_min, data.wind_speed_avg, data.wind_speed_max, data.wind_heading]
+  windData.data.push(dataRow)
+  drawCharts();
 }
