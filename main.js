@@ -330,7 +330,7 @@ function getPenalty(deg) {
 
 
 function intiLiveUpdate() {
-  var socket = io.connect('http://api.pioupiou.fr/v1/push');
+  var socket = io.connect('https://api.pioupiou.fr/v1/push');
 
   socket.on("connect", function () {
     socket.emit("subscribe", 1339); // station n° 1
