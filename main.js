@@ -162,16 +162,30 @@ function drawChart() {
             },
              tooltipFormat:'HH:mm dd.MM.yyyy'
           },
-//           ticks: {
-//             source: 'auto',
-// //            maxTicksLimit: 6,
-//             autoSkip: true
-//           },
-// //          maxRotation: 0 does not work
+          ticks: {
+            // source: 'auto',
+            maxTicksLimit: 10,
+            autoSkip: true
+          },
+//          maxRotation: 0 does not work
         },
         y: {
           beginAtZero: true,
+          position: 'right',
           suggestedMax: 35
+        }
+        ,
+        y1: {
+          display: true,
+          position: 'left',
+
+          // grid line settings
+          grid: {
+            drawOnChartArea: false, // only want the grid lines for one axis to show up
+          },
+          beginAtZero: true,
+          suggestedMax: 35
+
         }
       }
     }
