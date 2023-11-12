@@ -250,6 +250,10 @@ function fillColorCanvas(data, canvasId, dataToCol) {
 
   ctx.canvas.height = 25
 
+  if (isMobileDevice()) {
+    ctx.canvas.height = 50
+  }
+
   ctx.canvas.style.marginLeft = xAxis.left + "px"
 
   // Define colors for the blocks
@@ -371,4 +375,8 @@ function addLiveData(data) {
   //let dataRow = [data.date, data.pressure, data.station_id, data.wind_speed_min, data.wind_speed_avg, data.wind_speed_max, data.wind_heading]
   windData.data.push(dataRow)
   drawCharts();
+}
+
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
