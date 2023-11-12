@@ -1,5 +1,6 @@
 12.11.2023 kr
 
+tdN: check screen orientaion
 tdN: Experenmodus und einfacher modus  z.B. button -1w -1d -1h von bis +1h 1+d +1w
 
 tdN: modus der anfaengerbedingungen zeigt:  profile Helmut Lars Kim.. jeder kann sich sein Profil erstellen und

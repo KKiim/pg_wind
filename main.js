@@ -157,7 +157,7 @@ function drawCharts() {
         }
     },
       responsive: true,
-      aspectRatio: 2,
+      aspectRatio: 3,
       scales: {
         x: {
           type: 'time',
