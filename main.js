@@ -90,7 +90,8 @@ function drawCharts() {
   let xValues = [];
   let yValues = [];
 
-  //  let colors = ["166,206,227", "31,120,180", "178,223,138", "51,160,44", "251,154,153", "227,26,28", "253,191,111", "255,127,0", "202,178,214", "106,61,154", "255,255,153", "177,89,40"]
+  let avg_color = "2,56,88"
+  let min_max_color = "116,169,207"
 
   datasets = []
 
@@ -107,23 +108,31 @@ function drawCharts() {
     }
 
     let myBackgroundColor = {
-      wind_speed_min: "166,206,227,0.6",
-      wind_speed_avg: "51,160,44,0",
-      wind_speed_max: "166,206,227,0.6"
+      wind_speed_min: min_max_color + ",0.6",
+      wind_speed_avg: avg_color     + ",0",
+      wind_speed_max: min_max_color + ",0.6"
     }
 
     let myBorderColor = {
-      wind_speed_min: "166,206,227,0",
-      wind_speed_avg: "31,120,180,1",
-      wind_speed_max: "166,206,227,0"
+      wind_speed_min: min_max_color + ",0",
+      wind_speed_avg: avg_color     + ",1",
+      wind_speed_max: min_max_color + ",0"
     }
+
+    let fill = {
+      wind_speed_min: 0,
+      wind_speed_avg: 0,
+      wind_speed_max: 0
+    }
+
+    let legend = windData.legend[i]
 
     dataset = {
       label: windData.legend[i],
-      backgroundColor: "rgba(" + myBackgroundColor[windData.legend[i]] + ")",
-      borderColor: "rgba(" + myBorderColor[windData.legend[i]] + ")",
+      backgroundColor: "rgba(" + myBackgroundColor[legend] + ")",
+      borderColor: "rgba(" + myBorderColor[legend] + ")",
       // lineTension: 0,
-      fill: 1,
+      fill: 0,
       data: yValues,
       pointRadius: 0,
       pointHitRadius: 100,
@@ -177,8 +186,6 @@ function drawCharts() {
             color: 'grey'
           },
           grid: {
-            borderColor: 'blue',
-            lineWidth: 1,
             color: 'grey'
           }
           //          maxRotation: 0 does not work
@@ -192,7 +199,7 @@ function drawCharts() {
             color: 'grey'
           },
           ticks: {
-            maxTicksLimit: 5,
+            maxTicksLimit: 6,
             color: 'black'
           }
         }
