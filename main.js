@@ -172,7 +172,7 @@ function drawCharts() {
           },
           ticks: {
             // source: 'auto',
-            maxTicksLimit: 10,
+            maxTicksLimit: 13,
             autoSkip: true,
             color: 'grey'
           },
@@ -359,7 +359,6 @@ function intiLiveUpdate() {
   socket.on("connect", function () {
     socket.emit("subscribe", 1339); // station n° 1
   });
-  console.log("subscribed!")
 
   socket.on("measurement", function (data) {
     console.log("measurement" + data);
@@ -373,10 +372,63 @@ function addLiveData(data) {
 
   console.log("Added Data " + data.date + " data.station_id " + data.station_id + " data.wind_speed_avg " + data.wind_speed_avg + " data.wind_heading " + data.wind_heading)
   //let dataRow = [data.date, data.pressure, data.station_id, data.wind_speed_min, data.wind_speed_avg, data.wind_speed_max, data.wind_heading]
-  windData.data.push(dataRow)
-  drawCharts();
+
+  let lastDate = new Date(windData.data[windData.data.length - 1][0])
+
+  let inDate = new Date(data.date)
+
+  const diffTime = Math.abs(inDate - lastDate);
+  const diffMinutes = Math.ceil(diffTime / (1000 * 60));
+
+  if (diffMinutes > 30) {
+    console.log("ignoring update as chart is not showing live data")
+  } else {
+    windData.data.push(dataRow)
+    drawCharts();
+  }
 }
 
 function isMobileDevice() {
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
+
+
+var button_yesterday = document.getElementById("button_yesterday");
+
+button_yesterday.addEventListener("click", function() {
+  //startDate.setHours(currentDate.getHours() - 3);
+
+  startDate.setDate(startDate.getDate() - 1)
+  startDate.setHours(6, 0, 0, 0)
+  //endDate = neendDate
+  endDate.setDate(endDate.getDate() - 1)
+  endDate.setHours(18, 0, 0, 0)
+
+  bwd.value = toLocal(startDate)
+  ewd.value = toLocal(endDate)
+
+  fetchWindData();
+});
+
+var button_tommorow = document.getElementById("button_tommorow");
+
+button_tommorow.addEventListener("click", function() {
+  startDate.setDate(startDate.getDate() + 1)
+  startDate.setHours(6, 0, 0, 0)
+  endDate.setDate(endDate.getDate() + 1)
+  endDate.setHours(18, 0, 0, 0)
+
+
+  let now = new Date()
+
+  if (endDate > now || startDate > now) {
+    startDate = new Date()
+    startDate.setHours(6, 0, 0, 0)
+    endDate = new Date()
+  }
+
+  bwd.value = toLocal(startDate)
+  ewd.value = toLocal(endDate)
+
+  fetchWindData();
+})

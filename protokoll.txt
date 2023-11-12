@@ -1,6 +1,15 @@
+12.11.2023 kr
+
+tdN: Experenmodus und einfacher modus  z.B. button -1w -1d -1h von bis +1h 1+d +1w
+
+tdN: modus der anfaengerbedingungen zeigt:  profile Helmut Lars Kim.. jeder kann sich sein Profil erstellen und
+ok Legende ausgeschlatet
+ok chartLiveupdate nur wenn liveChart
+
 11.11.2023 kr
 
-todo: autorefresh check ob chart bis zum aktuellen zeitpunkt geht. scheint nur alle 10 minuten zu publishen?
+ok: button -1d von bis +1d
+tdN: letze chart einstellung merken
 
 07.11.2023 kr
 
@@ -8,8 +17,7 @@ ok   Bugfix Zeitauswahl geht manchmal nicht richtig
 ok   Bugfix OnResize window auch untere Charts anpassen
 ok   aspect Ratio
 
-idee: div dynmischer große vor chart damit dieser an richtiger pos
-idee: Background Color im Chart
+tdN: Background Color im Chart
 
 06.11.2023 kr
     Idee: Windrichtung in abweichung von der idealen windrichtung als graph darstellen.
