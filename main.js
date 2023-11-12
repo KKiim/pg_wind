@@ -137,6 +137,7 @@ function drawCharts() {
     myChart.destroy();
   }
 
+  Chart.defaults.font.size = 20;
   const ctx = document.getElementById('myChart').getContext('2d');
 
 
@@ -147,9 +148,14 @@ function drawCharts() {
       datasets: datasets
     },
     options: {
-      legend: {
-        display: false, // Hide the legend
-      },
+      plugins: {
+        legend: {
+            display: false,
+            labels: {
+                color: 'rgb(255, 99, 132)'
+            }
+        }
+    },
       responsive: true,
       aspectRatio: 2,
       scales: {
@@ -167,14 +173,28 @@ function drawCharts() {
           ticks: {
             // source: 'auto',
             maxTicksLimit: 10,
-            autoSkip: true
+            autoSkip: true,
+            color: 'grey'
           },
+          grid: {
+            borderColor: 'blue',
+            lineWidth: 1,
+            color: 'grey'
+          }
           //          maxRotation: 0 does not work
         },
         y: {
           beginAtZero: true,
           position: 'left',
-          suggestedMax: 35
+          suggestedMax: 40,
+          grid : {
+            lineWidth: 1,
+            color: 'grey'
+          },
+          ticks: {
+            maxTicksLimit: 5,
+            color: 'black'
+          }
         }
         ,
         // y1: {

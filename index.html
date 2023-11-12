@@ -6,6 +6,25 @@
     <!-- <script type="module" src="https://cdn.jsdelivr.net/npm/date-fns"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://api.pioupiou.fr/socket.io/socket.io.js"></script>
+    <style>
+        /* Default styles for headings */
+        h1 { font-size: 24px; }
+
+        input[type="datetime-local"] {
+            font-size: 24px;
+        }
+
+        /* Media query for screens with a maximum width of 600 pixels */
+        @media screen and (max-width: 800px) {
+            h1 {
+                font-size: 18px; /* Adjusted size for h1 on smaller screens */
+            }
+            input[type="datetime-local"] {
+                font-size: 20px; /* Adjust font size for smaller screens */
+            }
+        }
+
+    </style>
 </head>
 
 <body>
@@ -15,15 +34,28 @@
     <link rel="icon" type="image/x-icon" sizes="16x16" href="./src/favicon_1.ico">
 
 
-    <div style="margin: 3%;text-align: center;">
+    <div style="margin: 3%; text-align: center; font-size:x-large">
         <canvas id="myChart"></canvas>
         <canvas id="myCanvas"  style="border: 1px solid black;"></canvas> <!-- border: 1px solid black;>-->
         <canvas id="myCanvas1" style="border: 1px solid black;"></canvas>
         <label for="beginWeatherData">von: </label>
-        <input type="datetime-local" id="beginWeatherData" min="2023-10-15T00:00" />
+        <input type="datetime-local" id="beginWeatherData" min="2023-10-15T00:00" font-size="30px"/>
         <label for="endWeatherData">bis: </label>
         <input type="datetime-local" id="endWeatherData" min="2023-10-15T00:00" />
 
+    <script>
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    // Example usage
+    if (isMobileDevice()) {
+        console.log("You are on a mobile device!");
+    } else {
+        console.log("You are not on a mobile device.");
+    }
+
+    </script>
     <script src="main.js" async></script>
 </body>
 
