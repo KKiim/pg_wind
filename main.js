@@ -164,9 +164,9 @@ function drawCharts() {
           time: {
             displayFormats: {
               day: 'dd.MM',
-              hour: 'HH:00',
-              minute: 'HH:mm',
-              second: 'HH:mm:ss'
+              hour: 'H',
+              minute: 'H:mm',
+              second: 'H:mm:ss'
             },
             tooltipFormat: 'HH:mm dd.MM.yyyy'
           },

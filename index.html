@@ -19,6 +19,16 @@
                 font-size: 20px; /* Adjust font size for smaller screens */
             }
         }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
+      gap: 10px;
+    }
+
+    .element {
+      box-sizing: border-box;
+    }
     </style>
 </head>
 
@@ -33,13 +43,18 @@
         <canvas id="myChart"></canvas>
         <canvas id="myCanvas"  style="border: 1px solid black;"></canvas> <!-- border: 1px solid black;>-->
         <canvas id="myCanvas1" style="border: 1px solid black;"></canvas>
+        <div class="container">
+        <div class="element">
         <button id="button_yesterday" type="button">-1d</button>
         <label for="beginWeatherData">von: </label>
         <input type="datetime-local" id="beginWeatherData" min="2023-10-15T00:00"/>
+        </div>
+        <div class="element">
         <label for="endWeatherData">bis: </label>
         <input type="datetime-local" id="endWeatherData" min="2023-10-15T00:00" />
         <button id="button_tommorow" type="button">+1d</button>
-
+        </div>
+        </div>
     </div>
 
     <script src="main.js" async></script>
