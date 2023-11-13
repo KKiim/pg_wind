@@ -22,7 +22,7 @@ ok   Bugfix Zeitauswahl geht manchmal nicht richtig
 ok   Bugfix OnResize window auch untere Charts anpassen
 ok   aspect Ratio
 
-ok: Background Color im Chart-- probiert aber ist zu unruhig
+ok: Background Color im Chart - probiert aber ist zu unruhig
 
 06.11.2023 kr
 ok    Idee: Windrichtung in abweichung von der idealen windrichtung als graph darstellen.

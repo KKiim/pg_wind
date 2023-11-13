@@ -155,6 +155,15 @@ function drawCharts() {
     }
   }
 
+  const drawSubCharts = {
+    id:'drawSubCharts',
+    afterDraw(chart, args, plugins) {
+      // const { ctx, chartArea: { top, bottom, left , right, width,
+      //    height} } = chart;
+      drawWindDirChart()
+    }
+  }
+
 
   if (myChart) {
     myChart.destroy();
@@ -234,9 +243,9 @@ function drawCharts() {
         legend: {
             display: false
         }}
-    }//, plugins : [chartAreaBackgroundColor]
+    }, plugins : [drawSubCharts]
   });
-  drawWindDirChart()
+  //drawWindDirChart()
 }
 
 window.addEventListener('resize', onResize);
@@ -366,7 +375,7 @@ function getQualiForPointInTime(dataRow) {
 }
 
 function onResize() {
-  drawWindDirChart()
+  //drawWindDirChart()
 }
 
 function getPenalty(deg) {
@@ -429,7 +438,7 @@ button_yesterday.addEventListener("click", function() {
 
   startDate.setDate(startDate.getDate() - 1)
   startDate.setHours(6, 0, 0, 0)
-  //endDate = neendDate
+
   endDate.setDate(endDate.getDate() - 1)
   endDate.setHours(18, 0, 0, 0)
 
@@ -461,3 +470,7 @@ button_tommorow.addEventListener("click", function() {
 
   fetchWindData();
 })
+
+screen.addEventListener("orientationchange", () => {
+  drawCharts()
+});
