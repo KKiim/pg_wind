@@ -1,3 +1,7 @@
+13.11.2023 kr
+
+tdN: Wettervorhersage mit anzeigen. z.B. Windfinder.
+
 12.11.2023 kr
 
 tdN: check screen orientaion
@@ -18,10 +22,10 @@ ok   Bugfix Zeitauswahl geht manchmal nicht richtig
 ok   Bugfix OnResize window auch untere Charts anpassen
 ok   aspect Ratio
 
-tdN: Background Color im Chart
+ok: Background Color im Chart-- probiert aber ist zu unruhig
 
 06.11.2023 kr
-    Idee: Windrichtung in abweichung von der idealen windrichtung als graph darstellen.
+ok    Idee: Windrichtung in abweichung von der idealen windrichtung als graph darstellen.
         - oder pfeile unter dem graph
         - oder farbskala
-    Idee: Biliothek Guter Flugtage eventuell mit Link zu Fluegen an dem Tag.
+    Idee: Bibliothek Guter Flugtage eventuell mit Link zu Fluegen an dem Tag.

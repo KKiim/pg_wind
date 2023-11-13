@@ -189,7 +189,7 @@ function drawCharts() {
             // source: 'auto',
             maxTicksLimit: 13,
             autoSkip: true,
-            color: 'grey'
+            color: 'black'
           },
           grid: {
             color: 'grey'
@@ -202,7 +202,14 @@ function drawCharts() {
           suggestedMax: 40,
           grid : {
             lineWidth: 1,
-            color: 'grey'
+            color: function(context) {
+              if (context.tick.value >= 40) {
+                return 'black';
+              } else if (context.tick.value >= 30) {
+                return '#bd0026';
+              }
+              return 'grey';
+            },
           },
           ticks: {
             maxTicksLimit: 6,
@@ -255,13 +262,11 @@ function degToColor(dataRow) {
 
 function fillColorCanvas(data, canvasId, dataToCol) {
   // Get the canvas element and its 2d context
-  var canvas = document.getElementById(canvasId);
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext("2d");
+  const xAxis = myChart.scales['x'];
 
-  var ctx = canvas.getContext("2d");
-
-  var xAxis = myChart.scales['x'];
-
-  let canWidth = xAxis.width;
+  const canWidth = xAxis.width;
 
   ctx.canvas.width = canWidth
 
@@ -283,12 +288,20 @@ function fillColorCanvas(data, canvasId, dataToCol) {
   // colors = ['#b35806','#e08214','#fdb863','#fee0b6','#f7f7f7','#d8daeb','#b2abd2','#8073ac','#542788'];
 
   // Calculate block width based on the canvas width and the number of blocks
-  var blockWidth = canWidth / colors.length;
+  const blockWidth = canWidth / (colors.length - 1);
 
   // Loop through the colors and draw the blocks
   for (var i = 0; i < colors.length; i++) {
+    let currBlockWidth = blockWidth
+    if (i == 0 || i == (colors.length - 1)) {
+      currBlockWidth = blockWidth / 2
+    }
     ctx.fillStyle = colors[i];
-    ctx.fillRect(i * blockWidth, 0, blockWidth, canvas.height);
+
+    let start = i * blockWidth - (blockWidth / 2)
+    if (i == 0) start = 0
+
+    ctx.fillRect(start, 0, currBlockWidth, canvas.height);
   }
 }
 
@@ -351,7 +364,6 @@ function getQualiForPointInTime(dataRow) {
 
   return (min_score * avg_score * max_score * deg_score * deg_score)
 }
-
 
 function onResize() {
   drawWindDirChart()
