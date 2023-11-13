@@ -37,12 +37,12 @@ function init() {
   ewd.value = toLocal(endDate)
 
   bwd.addEventListener("change", function () {
-    startDate = bwd.value
+    startDate = new Date(bwd.value)
     fetchWindData();
   });
 
   ewd.addEventListener("change", function () {
-    endDate = ewd.value
+    endDate = new Date(ewd.value)
     fetchWindData();
   });
 
@@ -119,12 +119,6 @@ function drawCharts() {
       wind_speed_max: min_max_color + ",0"
     }
 
-    let fill = {
-      wind_speed_min: 0,
-      wind_speed_avg: 0,
-      wind_speed_max: 0
-    }
-
     let legend = windData.legend[i]
 
     dataset = {
@@ -139,6 +133,26 @@ function drawCharts() {
       pointHoverRadius: 10
     }
     datasets.push(dataset)
+  }
+
+  const chartAreaBackgroundColor = {
+    id:'chartAreaBackgroundColor',
+    beforeDraw(chart, args, plugins) {
+      const { ctx, chartArea: { top, bottom, left , right, width,
+         height} }= chart;
+         console.log('Hello :)')
+         ctx.save()
+         ctx.fillStyle = 'rgba(166,97,26, 0.2)'
+         let myHeight = height / 4
+         ctx.fillRect(left, top, width, myHeight)
+         ctx.fillStyle = 'rgba(223,194,125, 0.2)'
+         ctx.fillRect(left, top + myHeight, width, myHeight)
+         ctx.fillStyle = 'rgba(128,205,193, 0.2)'
+         ctx.fillRect(left, top + myHeight + myHeight, width, myHeight)
+         ctx.fillStyle = 'rgba(1,133,113, 0.2)'
+         ctx.fillRect(left, top + (3 * myHeight), width, myHeight)
+
+    }
   }
 
 
@@ -157,14 +171,6 @@ function drawCharts() {
       datasets: datasets
     },
     options: {
-      plugins: {
-        legend: {
-            display: false,
-            labels: {
-                color: 'rgb(255, 99, 132)'
-            }
-        }
-    },
       responsive: true,
       aspectRatio: 3,
       scales: {
@@ -216,8 +222,12 @@ function drawCharts() {
         //   suggestedMax: 35
 
         // }
-      }
-    }
+      },
+      plugins: {
+        legend: {
+            display: false
+        }}
+    }//, plugins : [chartAreaBackgroundColor]
   });
   drawWindDirChart()
 }
