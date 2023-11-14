@@ -1,5 +1,6 @@
 13.11.2023 kr
 
+tdN: Den aktuellen Zustand anzeigen. Windrose mit Farben des WindirCharts
 tdN: Wettervorhersage mit anzeigen. z.B. Windfinder.
 
 12.11.2023 kr

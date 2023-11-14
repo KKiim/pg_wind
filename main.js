@@ -160,7 +160,16 @@ function drawCharts() {
     afterDraw(chart, args, plugins) {
       // const { ctx, chartArea: { top, bottom, left , right, width,
       //    height} } = chart;
-      drawWindDirChart()
+      // ctx.save()
+      // for (let i = 0; i< 1000000; i++){
+
+      //   console.log("Hallo")
+      // }
+      // console.log(args);
+      // console.log(args.scale.id)
+      // if (args.scale.id == 'y') {
+      // }
+      drawWindDirChart(chart)
     }
   }
 
@@ -181,7 +190,7 @@ function drawCharts() {
     },
     options: {
       responsive: true,
-      aspectRatio: 3,
+      aspectRatio: 4,
       scales: {
         x: {
           type: 'time',
@@ -245,7 +254,7 @@ function drawCharts() {
         }}
     }, plugins : [drawSubCharts]
   });
-  //drawWindDirChart()
+  // drawWindDirChart()
 }
 
 window.addEventListener('resize', onResize);
@@ -269,11 +278,11 @@ function degToColor(dataRow) {
   return colors[colorIndex]
 }
 
-function fillColorCanvas(data, canvasId, dataToCol) {
+function fillColorCanvas(data, canvasId, dataToCol, chart) {
   // Get the canvas element and its 2d context
   const canvas = document.getElementById(canvasId);
   const ctx = canvas.getContext("2d");
-  const xAxis = myChart.scales['x'];
+  const xAxis = chart.scales['x'];
 
   const canWidth = xAxis.width;
 
@@ -314,10 +323,10 @@ function fillColorCanvas(data, canvasId, dataToCol) {
   }
 }
 
-function drawWindDirChart() {
+function drawWindDirChart(chart) {
   let data = windData.data
-  fillColorCanvas(data, "myCanvas", degToColor)
-  fillColorCanvas(data, "myCanvas1", qualiToColor)
+  fillColorCanvas(data, "myCanvas", degToColor, chart)
+  fillColorCanvas(data, "myCanvas1", qualiToColor, chart)
 }
 
 function qualiToColor(dataRow) {
