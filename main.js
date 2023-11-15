@@ -170,6 +170,9 @@ function drawCharts() {
       // if (args.scale.id == 'y') {
       // }
       drawWindDirChart(chart)
+
+      let currRow = windData.data[windData.data.length - 1]
+      drawCurrChart((currRow[6] + 168.5) % 360, qualiToColor(currRow), currRow[3], currRow[4], currRow[5], d[0])
     }
   }
 
