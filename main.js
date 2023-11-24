@@ -25,6 +25,7 @@ let startDate = new Date()
 let endDate = new Date()
 const bwd = document.getElementById("beginWeatherData")
 const ewd = document.getElementById("endWeatherData")
+let nextDayCount = 0; // used to dertimine if forecast is acivated
 
 
 init()
@@ -75,6 +76,65 @@ function fetchWindData() {
     .catch(error => {
       console.error('Fetch error:', error);
     });
+}
+
+let testF;
+
+function fetchFordcastData(){
+  fetch("https://api.openweathermap.org/data/2.5/forecast?lat=47.769291&lon=8.968063&units=metric&appid=e3cc74ea38feb7a798ae46719958f346")
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(forecastData => {
+    // Use the 'data' object, which contains the response from the API
+    addForecastToWindData(forecastData)
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+  });
+}
+
+function addForecastToWindData(forecastData) {
+
+
+  let dataPointCount = ((nextDayCount - 1) * 8 - 4)
+
+  if (dataPointCount > 40) {
+    nextDayCount--
+    dataPointCount = 40
+  }
+
+  for (let i = 0; i< dataPointCount; i++) {
+    let item = forecastData.list[i]
+    let date = new Date(item.dt_txt)
+    let wind_speed_min = item.wind.speed -1
+    if (wind_speed_min < 0 ) wind_speed_min = 0
+    let wind_speed_avg = item.wind.speed
+    let wind_speed_max = item.wind.gust
+    let wind_heading   = item.wind.deg
+
+    wind_speed_min *= 3.6
+    wind_speed_avg *= 3.6
+    wind_speed_max *= 3
+
+    wind_speed_min = Math.round(wind_speed_min)
+    wind_speed_avg = Math.round(wind_speed_avg)
+    wind_speed_max = Math.round(wind_speed_max)
+
+    if (wind_speed_max <= wind_speed_avg) {
+      wind_speed_max = Math.round(wind_speed_avg * 1.2)
+      if (wind_speed_max <= wind_speed_avg) {
+        wind_speed_max++
+      }
+    }
+
+    let dataRow = [date, 47.769291, 8.968063, wind_speed_min, wind_speed_avg, wind_speed_max, wind_heading, null]
+    windData.data.push(dataRow)
+  }
+  drawCharts();
 }
 
 function toUTC(val) {
@@ -158,17 +218,6 @@ function drawCharts() {
   const drawSubCharts = {
     id:'drawSubCharts',
     afterDraw(chart, args, plugins) {
-      // const { ctx, chartArea: { top, bottom, left , right, width,
-      //    height} } = chart;
-      // ctx.save()
-      // for (let i = 0; i< 1000000; i++){
-
-      //   console.log("Hallo")
-      // }
-      // console.log(args);
-      // console.log(args.scale.id)
-      // if (args.scale.id == 'y') {
-      // }
       drawWindDirChart(chart)
 
       let currRow = windData.data[windData.data.length - 1]
@@ -281,6 +330,12 @@ function degToColor(dataRow) {
   return colors[colorIndex]
 }
 
+function getMiddleDate(dateA, dateB) {
+  const averageTimestamp = ((new Date(dateA)).getTime() + (new Date(dateB)).getTime()) / 2; // todo Check warum new Date noetig!
+  const middleDate = new Date(averageTimestamp);
+  return middleDate;
+}
+
 function fillColorCanvas(data, canvasId, dataToCol, chart) {
   // Get the canvas element and its 2d context
   const canvas = document.getElementById(canvasId);
@@ -311,18 +366,38 @@ function fillColorCanvas(data, canvasId, dataToCol, chart) {
   // Calculate block width based on the canvas width and the number of blocks
   const blockWidth = canWidth / (colors.length - 1);
 
-  // Loop through the colors and draw the blocks
-  for (var i = 0; i < colors.length; i++) {
-    let currBlockWidth = blockWidth
-    if (i == 0 || i == (colors.length - 1)) {
-      currBlockWidth = blockWidth / 2
+  let blockTimeWidthArray = []
+
+  let startDate = data[0][0]
+  let endDate   = data[data.length - 1][0]
+  let intevallLength = new Date(endDate) -  new Date(startDate)
+  for (let i = 0; i < data.length ; i++) {
+    if (i == 0) {
+      blockTimeWidthArray[0] = ((new Date(data[1][0]) - new Date(startDate)) / 2)
+    } else if (i == data.length -1) {
+      blockTimeWidthArray[i] = ((new Date(data[i][0]) - new Date(data[i - 1][0])) / 2)
+    } else {
+      let betweenLastAndNow = (getMiddleDate(data[i][0], data[i - 1][0]))
+      let betweenNextAndNow = (getMiddleDate(data[i + 1][0], data[i][0]))
+      blockTimeWidthArray[i] = (betweenNextAndNow - betweenLastAndNow)
     }
+  }
+
+  //skalieren
+  let blockWidthArray = []
+  for (let b of blockTimeWidthArray) {
+    blockWidthArray.push( (b / intevallLength) * canWidth)
+  }
+  // let blockWidthArray = blockTimeWidthArray.map(b => (b / intevallLength) * canWidth);
+
+  // Loop through the colors and draw the blocks
+  let currBlockStart = 0
+  for (var i = 0; i < colors.length; i++) {
+    let currBlockWidth = blockWidthArray[i]
     ctx.fillStyle = colors[i];
 
-    let start = i * blockWidth - (blockWidth / 2)
-    if (i == 0) start = 0
-
-    ctx.fillRect(start, 0, currBlockWidth, canvas.height);
+    ctx.fillRect(currBlockStart, 0, currBlockWidth, canvas.height);
+    currBlockStart += currBlockWidth
   }
 }
 
@@ -446,6 +521,8 @@ function isMobileDevice() {
 var button_yesterday = document.getElementById("button_yesterday");
 
 button_yesterday.addEventListener("click", function() {
+  if (nextDayCount > 0) nextDayCount = 0
+  nextDayCount--;
   //startDate.setHours(currentDate.getHours() - 3);
 
   startDate.setDate(startDate.getDate() - 1)
@@ -463,6 +540,7 @@ button_yesterday.addEventListener("click", function() {
 var button_tommorow = document.getElementById("button_tommorow");
 
 button_tommorow.addEventListener("click", function() {
+  nextDayCount++;
   startDate.setDate(startDate.getDate() + 1)
   startDate.setHours(6, 0, 0, 0)
   endDate.setDate(endDate.getDate() + 1)
@@ -481,8 +559,22 @@ button_tommorow.addEventListener("click", function() {
   ewd.value = toLocal(endDate)
 
   fetchWindData();
+  if(nextDayCount > 1) {
+    //nextDayCount = 2
+    fetchFordcastData()
+  }
 })
 
 screen.addEventListener("orientationchange", () => {
   drawCharts()
+});
+
+
+const qrcode = new QRCode(document.getElementById('qrcode'), {
+  text: 'https://kkiim.github.io/pg_wind/',
+  width: 128,
+  height: 128,
+  colorDark : '#000',
+  colorLight : '#fff',
+  correctLevel : QRCode.CorrectLevel.H
 });

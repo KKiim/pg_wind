@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script src="https://api.pioupiou.fr/socket.io/socket.io.js"></script>
     <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
 
     <style>
         input[type="datetime-local"] {
@@ -47,7 +48,6 @@
         }
 
 
-
     </style>
 </head>
 
@@ -69,6 +69,8 @@
         <label for="endWeatherData">bis: </label>
         <input type="datetime-local" id="endWeatherData" min="2023-10-15T00:00" />
         <div id="curr-chart-container"></div>
+        <div id="qrcode" style="margin: 0 auto; width:13%;"></div>
+        <div>https://kkiim.github.io/pg_wind/</div>
 
     </div>
     <script>
