@@ -86,7 +86,8 @@
             .attr('width', svgWidth)
             .attr('height', svgHeight);
 
-            const colors = ['#b35806', '#e08214', '#fdb863', '#fee0b6', '#f7f7f7', '#d8daeb', '#b2abd2', '#8073ac', '#542788'];
+            let colors = ['#b35806', '#e08214', '#fdb863', '#fee0b6', '#f7f7f7', '#d8daeb', '#b2abd2', '#8073ac', '#542788'];
+
 
             // Set up the ring data with 16 parts
             const ringData = [
@@ -95,15 +96,15 @@
                 { startAngle: (2 * Math.PI) / 8, endAngle: (3 * Math.PI) / 8, color: 'grey' },
                 { startAngle: (3 * Math.PI) / 8, endAngle: (4 * Math.PI) / 8, color: 'grey' },
                 { startAngle: (4 * Math.PI) / 8, endAngle: (5 * Math.PI) / 8, color: 'grey' },
-                { startAngle: (5 * Math.PI) / 8, endAngle: (6 * Math.PI) / 8, color: '#b35806' },
-                { startAngle: (6 * Math.PI) / 8, endAngle: (7 * Math.PI) / 8, color: '#e08214' },
-                { startAngle: (7 * Math.PI) / 8, endAngle: (8 * Math.PI) / 8, color: '#fdb863' },
-                { startAngle: (8 * Math.PI) / 8, endAngle: (9 * Math.PI) / 8, color: '#fee0b6' },
-                { startAngle: (9 * Math.PI) / 8, endAngle: (10 * Math.PI) / 8, color: '#f7f7f7' },
-                { startAngle: (10 * Math.PI) / 8, endAngle: (11 * Math.PI) / 8, color: '#d8daeb' },
-                { startAngle: (11 * Math.PI) / 8, endAngle: (12 * Math.PI) / 8, color: '#b2abd2' },
-                { startAngle: (12 * Math.PI) / 8, endAngle: (13 * Math.PI) / 8, color: '#8073ac' },
-                { startAngle: (13 * Math.PI) / 8, endAngle: (14 * Math.PI) / 8, color: '#542788' },
+                { startAngle: (5 * Math.PI) / 8, endAngle: (6 * Math.PI) / 8, color: colors[0] },
+                { startAngle: (6 * Math.PI) / 8, endAngle: (7 * Math.PI) / 8, color: colors[1] },
+                { startAngle: (7 * Math.PI) / 8, endAngle: (8 * Math.PI) / 8, color: colors[2] },
+                { startAngle: (8 * Math.PI) / 8, endAngle: (9 * Math.PI) / 8, color: colors[3] },
+                { startAngle: (9 * Math.PI) / 8, endAngle: (10 * Math.PI) / 8, color: colors[4] },
+                { startAngle: (10 * Math.PI) / 8, endAngle: (11 * Math.PI) / 8, color: colors[5] },
+                { startAngle: (11 * Math.PI) / 8, endAngle: (12 * Math.PI) / 8, color: colors[6] },
+                { startAngle: (12 * Math.PI) / 8, endAngle: (13 * Math.PI) / 8, color: colors[7] },
+                { startAngle: (13 * Math.PI) / 8, endAngle: (14 * Math.PI) / 8, color: colors[8] },
                 { startAngle: (14 * Math.PI) / 8, endAngle: (15 * Math.PI) / 8, color: 'grey' },
                 { startAngle: (15 * Math.PI) / 8, endAngle: 2 * Math.PI, color: 'grey' },
             ];
