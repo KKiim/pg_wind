@@ -1,22 +1,29 @@
 25.11.2023 kr
 
 neue Parameter [default] (möglich):
-    dirCol [0] (0,1)
-    prefCond [strong] (weak,medium,strong)
+    dirCol [0] (0,1)                        - directionColor farbskala für den oberen WindrichtungsChart
+    prefCond [strong] (weak,medium,strong)  - PreferedConditions bedingungen bei denen man gerne fliegt
 
-    und es gibt Paramter die von prefCond geschrieben werden. Diese koennen aber angepasst werden. Defaults*:
+    und es gibt Paramter die von prefCond geschrieben werden. Diese koennen aber angepasst werden.
+
+    - Gemessen werden immer 3 Werte: min avg max
+    - diese ensprechen dem Wert vor dem ersten "_"
+    - mögliche werte sind zahlen wie: 23.4
+    - Die Einheit ist km/h
 
     Bsp:
-    min_min : der mindest minimal wind. Bei weniger min wind gibt es 0 Punkte.
+    min_min     : der mindest minimal wind. Bei weniger min wind gibt es 0 Punkte.
     avg_opt_min : Wenn der durchschnittswind ueber diesem Wert liegt gibt volle Punkte.
     max_opt_max : Wenn der maximal wind(Böen) unter diesem Wert liegt gibt es volle Punkte.
 
+    Bsp.
+        https://kkiim.github.io/pg_wind/?dirCol=0&prefCond=medium
     Bsp. vorgefuellt mit default Werten:
         https://kkiim.github.io/pg_wind/?dirCol=0&prefCond=strong&min_min=10&avg_opt_min=15&avg_opt_max=20&avg_max=30&max_opt_max=25&max_max=40
 
     *Defaults:
         "weak": {
-      // safty firt - No need to stay in the air
+      // safty first - No need to stay in the air
       "myMin" : {
         "min" : 0
       },
