@@ -1,14 +1,78 @@
+25.11.2023 kr
+
+neue Parameter [default] (möglich):
+    dirCol [0] (0,1)
+    prefCond [strong] (weak,medium,strong)
+
+    und es gibt Paramter die von prefCond geschrieben werden. Diese koennen aber angepasst werden. Defaults*:
+
+    Bsp:
+    min_min : der mindest minimal wind. Bei weniger min wind gibt es 0 Punkte.
+    avg_opt_min : Wenn der durchschnittswind ueber diesem Wert liegt gibt volle Punkte.
+    max_opt_max : Wenn der maximal wind(Böen) unter diesem Wert liegt gibt es volle Punkte.
+
+    Bsp. vorgefuellt mit default Werten:
+        https://kkiim.github.io/pg_wind/?dirCol=0&prefCond=strong&min_min=10&avg_opt_min=15&avg_opt_max=20&avg_max=30&max_opt_max=25&max_max=40
+
+    *Defaults:
+        "weak": {
+      // safty firt - No need to stay in the air
+      "myMin" : {
+        "min" : 0
+      },
+      "myAvg" : {
+        "opt_min" : 5,
+        "opt_max" : 15,
+        "max" : 20
+      },
+      "myMax" : {
+        "opt_max" : 15,
+        "max" : 25
+      }
+    },
+    "medium": { // want to stay in the air but not too important if it's just not enougth
+      "myMin": {
+        "min" : 5
+      },
+      "myAvg" : {
+        "opt_min" : 12.5,
+        "opt_max" : 17.5,
+        "max" : 25
+      },
+      "myMax" : {
+        "opt_max" : 22,
+        "max" : 32
+      }
+    },
+    "strong" : { // Do never want to land - safty second
+      "myMin" : {
+        "min" : 10
+      },
+      "myAvg" : {
+        "opt_min" : 15,
+        "opt_max" : 20,
+        "max" : 30
+      },
+      "myMax" : {
+        "opt_max" : 25,
+        "max" : 40
+      }
+    }
+
+
+tdN: Schirmvorschlag von der App.
+
 13.11.2023 kr
 
-tdN: Den aktuellen Zustand anzeigen. Windrose mit Farben des WindirCharts
+ok Den aktuellen Zustand anzeigen. Windrose mit Farben des WindirCharts
 tdN: Wettervorhersage mit anzeigen. z.B. Windfinder.
 
 12.11.2023 kr
 
-tdN: check screen orientaion
-tdN: Experenmodus und einfacher modus  z.B. button -1w -1d -1h von bis +1h 1+d +1w
+-tdN: check screen orientaion
+-tdN: Experenmodus und einfacher modus  z.B. button -1w -1d -1h von bis +1h 1+d +1w
 
-tdN: modus der anfaengerbedingungen zeigt:  profile Helmut Lars Kim.. jeder kann sich sein Profil erstellen und
+ok modus der anfaengerbedingungen zeigt:  profile Helmut Lars Kim.. jeder kann sich sein Profil erstellen und
 ok Legende ausgeschlatet
 ok chartLiveupdate nur wenn liveChart
 

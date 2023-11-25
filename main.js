@@ -28,6 +28,14 @@ const ewd = document.getElementById("endWeatherData")
 let nextDayCount = 0; // used to dertimine if forecast is acivated
 let urlParams = new URLSearchParams(window.location.search);
 let dirColMode = urlParams.get('dirCol');
+let preferredCondition = urlParams.get('prefCond');
+
+let cfg_min_min     = urlParams.get('min_min')
+let cfg_avg_opt_min = urlParams.get('avg_opt_min')
+let cfg_avg_opt_max = urlParams.get('avg_opt_max')
+let cfg_avg_max     = urlParams.get('avg_max')
+let cfg_max_max     = urlParams.get('max_max')
+let cfg_max_opt_max = urlParams.get('max_opt_max')
 
 
 
@@ -317,25 +325,24 @@ window.addEventListener('resize', onResize);
 
 
 function getWindDirCols() {
-  colors = ['#b35806', '#e08214', '#fdb863', '#fee0b6', '#f7f7f7', '#d8daeb', '#b2abd2', '#8073ac', '#542788']
-
-  if (dirColMode == 2) {
-    colors = [ '#edf8fb', '#b2e2e2', '#66c2a4', '#2ca25f', '#006d2c', '#2ca25f', '#66c2a4', '#b2e2e2', '#edf8fb']
+  colors = [ '#edf8fb', '#b2e2e2', '#66c2a4', '#2ca25f', '#006d2c', '#2ca25f', '#66c2a4', '#b2e2e2', '#edf8fb', '#555555']
+  if (dirColMode == 1) {
+    colors = ['#b35806', '#e08214', '#fdb863', '#fee0b6', '#f7f7f7', '#d8daeb', '#b2abd2', '#8073ac', '#542788', '#555555']
   }
   return colors
 }
 
 function degToColor(dataRow) {
+  let colors = getWindDirCols()
   let deg = dataRow[6]
   let deltaDeg = 180
   if (deg > 45) deltaDeg = deg - 225;
   if (deg < 45) deltaDeg = 135 + deg;
 
-  if (deltaDeg > 90 || deltaDeg < - 90) {
-    return '#cccccc'
-  }
-
   colorIndex = Math.round((deltaDeg / 90) * 4) + 4
+  if (deltaDeg > 90 || deltaDeg < - 90) {
+    return colorIndex = colors.length - 1
+  }
 
   return getWindDirCols()[colorIndex]
 }
@@ -432,32 +439,104 @@ function getQualiForPointInTime(dataRow) {
   const max = dataRow[5]
   const deg = dataRow[6]
 
-  min_score = 0
-  avg_score = 0
-  max_score = 0
-  deg_score = 0
+  let min_score = 0
+  let avg_score = 0
+  let max_score = 0
+  let deg_score = 0
 
-  if (min < 10) {
-    min_score = min / 10
+  let profil = {
+    "weak": {
+      // safty firt - No need to stay in the air
+      "myMin" : {
+        "min" : 0
+      },
+      "myAvg" : {
+        "opt_min" : 5,
+        "opt_max" : 15,
+        "max" : 20
+      },
+      "myMax" : {
+        "opt_max" : 15,
+        "max" : 25
+      }
+    },
+    "medium": { // want to stay in the air but not too important if it's just not enougth
+      "myMin": {
+        "min" : 5
+      },
+      "myAvg" : {
+        "opt_min" : 12.5,
+        "opt_max" : 17.5,
+        "max" : 25
+      },
+      "myMax" : {
+        "opt_max" : 22,
+        "max" : 32
+      }
+    },
+    "strong" : { // Do never want to land - safty second
+      "myMin" : {
+        "min" : 10
+      },
+      "myAvg" : {
+        "opt_min" : 15,
+        "opt_max" : 20,
+        "max" : 30
+      },
+      "myMax" : {
+        "opt_max" : 25,
+        "max" : 40
+      }
+    }
+  }
+
+  // https://kkiim.github.io/pg_wind/?dirCol=0&prefCond=strong&min_min=10&avg_opt_min=15&avg_opt_max=20&avg_max=30&max_opt_max=25&max_max=40
+
+  let t = ""
+
+  if (preferredCondition == "weak" || preferredCondition == "medium" || preferredCondition == "strong" ) {
+    t = preferredCondition
+  } else {
+    t = "strong"
+  }
+
+  let min_min = profil[t].myMin.min
+  let avg_opt_min = profil[t].myAvg.opt_min
+  let avg_opt_max = profil[t].myAvg.opt_max
+  let avg_max = profil[t].myAvg.max
+  let max_max = profil[t].myMax.max
+  let max_opt_max = profil[t].myMax.opt_max
+
+
+  if(cfg_min_min    ) {min_min     = cfg_min_min    }
+  if(cfg_avg_opt_min) {avg_opt_min = cfg_avg_opt_min}
+  if(cfg_avg_opt_max) {avg_opt_max = cfg_avg_opt_max}
+  if(cfg_avg_max    ) {avg_max     = cfg_avg_max    }
+  if(cfg_max_max    ) {max_max     = cfg_max_max    }
+  if(cfg_max_opt_max) {max_opt_max = cfg_max_opt_max}
+
+
+  if (min < min_min) {
+    min_score = min / min_min
   } else {
     min_score = 1
   }
 
-  if (avg > 30) {
+  if (avg > avg_max) { // > 30
     avg_score = 0
-  } else if (avg > 20) {
-    avg_score = 1 - ((avg - 20) / 10)
-  } else if (avg > 15) {
+  } else if (avg > avg_opt_max) { // 20 - 30
+    avg_score = 1 - ((avg - avg_opt_max) / (avg_max - avg_opt_max))
+  } else if (avg > avg_opt_min) { // 15 - 20
     avg_score = 1
-  } else {
-    avg_score = avg / 15
+  } else {               // 0 - 15
+    avg_score = avg / avg_opt_min
   }
 
-  if (max > 40) {
+  if (max > max_max) { // > 40
     max_score = 0
-  } else if (max > 25) {
-    max_score = 1 - ((max - 25) / 15)
-  } else {
+  } else if (max > max_opt_max) { // 25 - 40
+    max_score = 1 - ((max - max_opt_max) / (max_max - max_opt_max))
+  } else { // 0 - 25
     max_score = 1
   }
 
@@ -605,11 +684,11 @@ async function drawCurrChart(rotation, color, min, avg, max, lastUpdate) {
 
   // Set up the ring data with 16 parts
   const ringData = [
-      { startAngle: 0, endAngle: (1 * Math.PI) / 8, color: 'grey' },
-      { startAngle: (1 * Math.PI) / 8, endAngle: (2 * Math.PI) / 8, color: 'grey' },
-      { startAngle: (2 * Math.PI) / 8, endAngle: (3 * Math.PI) / 8, color: 'grey' },
-      { startAngle: (3 * Math.PI) / 8, endAngle: (4 * Math.PI) / 8, color: 'grey' },
-      { startAngle: (4 * Math.PI) / 8, endAngle: (5 * Math.PI) / 8, color: 'grey' },
+      { startAngle: 0, endAngle: (1 * Math.PI) / 8, color: colors[9] },
+      { startAngle: (1 * Math.PI) / 8, endAngle: (2 * Math.PI) / 8, color: colors[9] },
+      { startAngle: (2 * Math.PI) / 8, endAngle: (3 * Math.PI) / 8, color: colors[9] },
+      { startAngle: (3 * Math.PI) / 8, endAngle: (4 * Math.PI) / 8, color: colors[9] },
+      { startAngle: (4 * Math.PI) / 8, endAngle: (5 * Math.PI) / 8, color: colors[9] },
       { startAngle: (5 * Math.PI) / 8, endAngle: (6 * Math.PI) / 8, color: colors[0] },
       { startAngle: (6 * Math.PI) / 8, endAngle: (7 * Math.PI) / 8, color: colors[1] },
       { startAngle: (7 * Math.PI) / 8, endAngle: (8 * Math.PI) / 8, color: colors[2] },
@@ -619,8 +698,8 @@ async function drawCurrChart(rotation, color, min, avg, max, lastUpdate) {
       { startAngle: (11 * Math.PI) / 8, endAngle: (12 * Math.PI) / 8, color: colors[6] },
       { startAngle: (12 * Math.PI) / 8, endAngle: (13 * Math.PI) / 8, color: colors[7] },
       { startAngle: (13 * Math.PI) / 8, endAngle: (14 * Math.PI) / 8, color: colors[8] },
-      { startAngle: (14 * Math.PI) / 8, endAngle: (15 * Math.PI) / 8, color: 'grey' },
-      { startAngle: (15 * Math.PI) / 8, endAngle: 2 * Math.PI, color: 'grey' },
+      { startAngle: (14 * Math.PI) / 8, endAngle: (15 * Math.PI) / 8, color: colors[9] },
+      { startAngle: (15 * Math.PI) / 8, endAngle: 2 * Math.PI, color: colors[9] },
   ];
 
   // Draw the ring
