@@ -69,8 +69,16 @@ function fetchWindData() {
     endDate = new Date(); // current Date
   }
 
-  let UTCstart = toUTC(startDate)
-  let UTCend = toUTC(endDate)
+  let UTCstart
+  let UTCend
+
+  try {
+    UTCstart = toUTC(startDate)
+    UTCend = toUTC(endDate)
+  } catch {
+    console.log("toUTC Failed with startDate: " + startDate + " endDate: " + endDate);
+    return
+  }
 
   fetch("https://api.pioupiou.fr/v1/archive/1339?start=" + UTCstart + "&stop=" + UTCend)
     .then(response => {
@@ -157,6 +165,10 @@ function toLocal(val) {
 }
 
 function drawCharts() {
+  if (windData.data.length == 0) {
+    console.log("No Data")
+    return
+  }
 
   let xValues = [];
   let yValues = [];
@@ -354,6 +366,7 @@ function getMiddleDate(dateA, dateB) {
 }
 
 function fillColorCanvas(data, canvasId, dataToCol, chart) {
+  if (data.length == 0) return
   // Get the canvas element and its 2d context
   const canvas = document.getElementById(canvasId);
   const ctx = canvas.getContext("2d");
@@ -386,16 +399,21 @@ function fillColorCanvas(data, canvasId, dataToCol, chart) {
   let startDate = data[0][0]
   let endDate   = data[data.length - 1][0]
   let intevallLength = new Date(endDate) -  new Date(startDate)
-  for (let i = 0; i < data.length ; i++) {
-    if (i == 0) {
-      blockTimeWidthArray[0] = ((new Date(data[1][0]) - new Date(startDate)) / 2)
-    } else if (i == data.length -1) {
-      blockTimeWidthArray[i] = ((new Date(data[i][0]) - new Date(data[i - 1][0])) / 2)
-    } else {
-      let betweenLastAndNow = (getMiddleDate(data[i][0], data[i - 1][0]))
-      let betweenNextAndNow = (getMiddleDate(data[i + 1][0], data[i][0]))
-      blockTimeWidthArray[i] = (betweenNextAndNow - betweenLastAndNow)
+
+  if (data.length >= 2) {
+    for (let i = 0; i < data.length ; i++) {
+      if (i == 0) {
+        blockTimeWidthArray[0] = ((new Date(data[1][0]) - new Date(startDate)) / 2)
+      } else if (i == data.length -1) {
+        blockTimeWidthArray[i] = ((new Date(data[i][0]) - new Date(data[i - 1][0])) / 2)
+      } else {
+        let betweenLastAndNow = (getMiddleDate(data[i][0], data[i - 1][0]))
+        let betweenNextAndNow = (getMiddleDate(data[i + 1][0], data[i][0]))
+        blockTimeWidthArray[i] = (betweenNextAndNow - betweenLastAndNow)
+      }
     }
+  } else if (data.length == 1) {
+    blockTimeWidthArray[0] = intevallLength
   }
 
   //skalieren

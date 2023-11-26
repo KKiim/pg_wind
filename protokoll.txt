@@ -1,3 +1,7 @@
+26.11.2023 kr
+
+  Verdacht: zu südlich wind ist nicht so schlecht wie zu westlich
+
 25.11.2023 kr
 
 neue Parameter [default] (möglich):
