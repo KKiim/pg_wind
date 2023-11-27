@@ -137,7 +137,7 @@ function addForecastToWindData(forecastData) {
 
     wind_speed_min *= 3.6
     wind_speed_avg *= 3.6
-    wind_speed_max *= 3
+    wind_speed_max *= 2.5
 
     wind_speed_min = Math.round(wind_speed_min)
     wind_speed_avg = Math.round(wind_speed_avg)
@@ -244,7 +244,7 @@ function drawCharts() {
       drawWindDirChart(chart)
 
       let currRow = windData.data[windData.data.length - 1]
-      drawCurrChart((currRow[6] + 168.5) % 360, qualiToColor(currRow), currRow[3], currRow[4], currRow[5], d[0])
+      drawCurrChart(currRow, d[0])
     }
   }
 
@@ -253,7 +253,7 @@ function drawCharts() {
     myChart.destroy();
   }
 
-  Chart.defaults.font.size = 20;
+  Chart.defaults.font.size = 25;
   const ctx = document.getElementById('myChart').getContext('2d');
 
 
@@ -464,7 +464,7 @@ function getQualiForPointInTime(dataRow) {
 
   let profil = {
     "weak": {
-      // safty firt - No need to stay in the air
+      // safty first - No need to stay in the air
       "myMin" : {
         "min" : 0
       },
@@ -492,7 +492,7 @@ function getQualiForPointInTime(dataRow) {
         "max" : 32
       }
     },
-    "strong" : { // Do never want to land - safty second
+    "strong" : { // Do never want to land
       "myMin" : {
         "min" : 10
       },
@@ -685,7 +685,46 @@ const qrcode = new QRCode(document.getElementById('qrcode'), {
 });
 
 
-async function drawCurrChart(rotation, color, min, avg, max, lastUpdate) {
+let canvaIds = ["myCanvas", "myCanvas1"]
+
+for (let canvId of canvaIds) {
+  let canvas = document.getElementById(canvId)
+  function handleHover(event) {
+    // Get the mouse coordinates relative to the canvas
+    var mouseX = event.clientX - canvas.getBoundingClientRect().left;
+
+    // find index
+    let index = 0
+
+    //windData.data[index][0]
+
+    let progress = mouseX / canvas.width
+
+    index = Math.round(windData.data.length * progress)
+
+    console.log("mouseX: " + mouseX + " canvas.width " + canvas.width)
+
+    drawCurrChart(windData.data[index])
+
+  }
+  function handleLeave() {
+    drawCurrChart(windData.data[windData.data.length - 1])
+  }
+
+
+  canvas.addEventListener('mouseleave', handleLeave);
+  canvas.addEventListener('mousemove', handleHover);
+}
+
+
+async function drawCurrChart(currRow) {
+
+  const rotation = (currRow[6] + 168.5) % 360
+  const color    = qualiToColor(currRow)
+  const min      = currRow[3]
+  const avg      = currRow[4]
+  const max      = currRow[5]
+  const lastUpdate = currRow[0]
 
   // Set up the SVG container
   const svgWidth = 400;
