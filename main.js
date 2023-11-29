@@ -26,6 +26,9 @@ let endDate = new Date()
 const bwd = document.getElementById("beginWeatherData")
 const ewd = document.getElementById("endWeatherData")
 let nextDayCount = 0; // used to dertimine if forecast is acivated
+let lastKnownX = 0;
+let timeout;
+
 let urlParams = new URLSearchParams(window.location.search);
 let dirColMode = urlParams.get('dirCol');
 let preferredCondition = urlParams.get('prefCond');
@@ -164,6 +167,32 @@ function toLocal(val) {
   return val.toLocaleString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
+function verticalLineFunc() {
+  var ctx = myChart.ctx;
+  var xAxis = myChart.scales['x'];
+  var yAxis = myChart.scales['y'];
+
+  var xValue = lastKnownX;
+  if (!xValue) return;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(xAxis.getPixelForValue(xValue), yAxis.top);
+  ctx.lineTo(xAxis.getPixelForValue(xValue), yAxis.bottom);
+  ctx.strokeStyle = '#01665e';
+  ctx.stroke();
+  ctx.restore();
+}
+
+// Function to reset the timer
+function resetTimer() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        handleLeave()
+        console.log('No activity for 5 seconds');
+    }, 5000);
+}
+
 function drawCharts() {
   if (windData.data.length == 0) {
     console.log("No Data")
@@ -212,8 +241,8 @@ function drawCharts() {
       fill: 0,
       data: yValues,
       pointRadius: 0,
-      pointHitRadius: 100,
-      pointHoverRadius: 10
+      pointHitRadius: 0,
+      pointHoverRadius: 0
     }
     datasets.push(dataset)
   }
@@ -241,10 +270,9 @@ function drawCharts() {
   const drawSubCharts = {
     id:'drawSubCharts',
     afterDraw(chart, args, plugins) {
+      verticalLineFunc()
       drawWindDirChart(chart)
 
-      let currRow = windData.data[windData.data.length - 1]
-      drawCurrChart(currRow, d[0])
     }
   }
 
@@ -254,6 +282,7 @@ function drawCharts() {
   }
 
   Chart.defaults.font.size = 25;
+  Chart.defaults.plugins.tooltip.enabled = false
   const ctx = document.getElementById('myChart').getContext('2d');
 
 
@@ -276,7 +305,7 @@ function drawCharts() {
               minute: 'H:mm',
               second: 'H:mm:ss'
             },
-            tooltipFormat: 'HH:mm dd.MM.yyyy'
+            //tooltipFormat: 'HH:mm dd.MM.yyyy'
           },
           ticks: {
             // source: 'auto',
@@ -329,7 +358,38 @@ function drawCharts() {
         }}
     }, plugins : [drawSubCharts]
   });
-  // drawWindDirChart()
+
+    // Add event listener to update vertical line position
+    document.getElementById('myChart').addEventListener('mousemove', function(event) {
+      var chartArea = myChart.chartArea;
+      var xValue = myChart.scales['x'].getValueForPixel(event.clientX - chartArea.left);
+      lastKnownX = xValue;
+
+      //find closest
+      let minDist = Math.abs(new Date(windData.data[0][0]) - new Date(lastKnownX))
+      let index = windData.data.length - 1
+      for (let i = 0; i < windData.data.length; i++ ) {
+        let row = windData.data[i]
+        let dist = Math.abs(new Date(row[0]) - new Date(lastKnownX))
+//        console.log(dist)
+        if (minDist >= dist) {
+          minDist = dist
+        } else {
+          index = i-1
+          break
+        }
+      }
+      // console.log("mindist: " +     minDist)
+      // console.log("index: " +     index)
+
+      if (index > 0 && index < windData.data.length) {
+        drawCurrChart(windData.data[index], " ")
+        myChart.update();
+      }
+    });
+
+  let currRow = windData.data[windData.data.length - 1]
+  drawCurrChart(currRow, "Letztes Update: ")
 }
 
 window.addEventListener('resize', onResize);
@@ -353,10 +413,10 @@ function degToColor(dataRow) {
 
   colorIndex = Math.round((deltaDeg / 90) * 4) + 4
   if (deltaDeg > 90 || deltaDeg < - 90) {
-    return colorIndex = colors.length - 1
+    colorIndex = colors.length - 1
   }
 
-  return getWindDirCols()[colorIndex]
+  return colors[colorIndex]
 }
 
 function getMiddleDate(dateA, dateB) {
@@ -702,13 +762,12 @@ for (let canvId of canvaIds) {
 
     index = Math.round(windData.data.length * progress)
 
-    console.log("mouseX: " + mouseX + " canvas.width " + canvas.width)
 
-    drawCurrChart(windData.data[index])
+    drawCurrChart(windData.data[index], " ")
 
   }
   function handleLeave() {
-    drawCurrChart(windData.data[windData.data.length - 1])
+    drawCurrChart(windData.data[windData.data.length - 1], "Letztes Update: ")
   }
 
 
@@ -716,15 +775,27 @@ for (let canvId of canvaIds) {
   canvas.addEventListener('mousemove', handleHover);
 }
 
+let lastDrawnTimeStampToCurrChart = -1;
 
-async function drawCurrChart(currRow) {
+function drawCurrChart(currRow, labeText) {
+  const lastUpdate = currRow[0]
+  if (lastDrawnTimeStampToCurrChart && lastDrawnTimeStampToCurrChart == lastUpdate) {
+    return
+  } else {
+    lastDrawnTimeStampToCurrChart = lastUpdate
+    resetTimer();
+  }
+
+  lastKnownX = (new Date(lastUpdate)).getTime()
+  verticalLineFunc()
+  myChart.update()
+
 
   const rotation = (currRow[6] + 168.5) % 360
   const color    = qualiToColor(currRow)
   const min      = currRow[3]
   const avg      = currRow[4]
   const max      = currRow[5]
-  const lastUpdate = currRow[0]
 
   // Set up the SVG container
   const svgWidth = 400;
@@ -791,7 +862,7 @@ async function drawCurrChart(currRow) {
       .attr('fill', color);
 
 
-  let dateLabel = 'Letztes Update: ' + new Date(lastUpdate).toLocaleTimeString()
+  let dateLabel = labeText + new Date(lastUpdate).toLocaleTimeString()
   // Add text information
   const textGroup = group.append('g').attr('transform', `translate(0, -120) rotate(${-360 / 32})`);
 

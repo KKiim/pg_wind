@@ -1,5 +1,7 @@
 26.11.2023 kr
 
+ok hover über colorChart aktualisiert KreisChart fuer aktuelle messwerte.
+tdN Bug bei ungleichen abstaenden un Hover über colorChart.
   Verdacht: zu südlich wind ist nicht so schlecht wie zu westlich
 
 25.11.2023 kr
