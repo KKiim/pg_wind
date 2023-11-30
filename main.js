@@ -168,6 +168,7 @@ function toLocal(val) {
 }
 
 function verticalLineFunc() {
+  if (!myChart) return;
   var ctx = myChart.ctx;
   var xAxis = myChart.scales['x'];
   var yAxis = myChart.scales['y'];
