@@ -1,37 +1,17 @@
-
-// curl "http://api.pioupiou.fr/v1/archive/1339?start=2023-10&stop=2023-11"
-// curl "http://api.pioupiou.fr/v1/live/1339"
-
-/*
-
-let myData = {
-  "doc": "http://developers.pioupiou.fr/api/archive/",
-  "license": "http://developers.pioupiou.fr/data-licensing",
-  "attribution": "(c) contributors of the Pioupiou wind network <http://pioupiou.fr>",
-  "legend": ["time","latitude","longitude","wind_speed_min","wind_speed_avg","wind_speed_max","wind_heading","pressure"],
-  "units": ["utc","degrees","degrees","km/h","km/h","km/h","degrees","(deprecated)"],
-  "data": []
-}
-
-*/
-
-
-//********* */ 3.11 War eine Topflugtag! **********************
-
-
-var myChart;
+var myChart
 let windData = {}
 let startDate = new Date()
 let endDate = new Date()
 const bwd = document.getElementById("beginWeatherData")
 const ewd = document.getElementById("endWeatherData")
-let nextDayCount = 0; // used to dertimine if forecast is acivated
-let lastKnownX = 0;
-let timeout;
+let nextDayCount = 0 // Determines if forecast is activated
+let lastKnownX = 0
+let timeout
 
-let urlParams = new URLSearchParams(window.location.search);
-let dirColMode = urlParams.get('dirCol');
-let preferredCondition = urlParams.get('prefCond');
+// URL parameters
+let urlParams = new URLSearchParams(window.location.search)
+let dirColMode = urlParams.get('dirCol')
+let preferredCondition = urlParams.get('prefCond')
 
 let cfg_min_min     = urlParams.get('min_min')
 let cfg_avg_opt_min = urlParams.get('avg_opt_min')
@@ -45,7 +25,6 @@ let cfg_max_opt_max = urlParams.get('max_opt_max')
 init()
 
 function init() {
-  //startDate.setHours(currentDate.getHours() - 3);
   startDate.setHours(6, 0, 0, 0)
 
   bwd.value = toLocal(startDate)
@@ -53,70 +32,63 @@ function init() {
 
   bwd.addEventListener("change", function () {
     startDate = new Date(bwd.value)
-    fetchWindData();
+    fetchWindData()
   });
 
   ewd.addEventListener("change", function () {
     endDate = new Date(ewd.value)
-    fetchWindData();
+    fetchWindData()
   });
 
-  fetchWindData()
-  intiLiveUpdate()
+    fetchWindData()
+    initLiveUpdate()
 }
 
 function fetchWindData() {
-  //console.log("fetchWindData startDate: " + startDate + " endDate: " + endDate);
-
   if (!endDate) {
-    endDate = new Date(); // current Date
+    endDate = new Date() // Current Date
   }
 
-  let UTCstart
-  let UTCend
+  let UTCstart, UTCend;
 
   try {
     UTCstart = toUTC(startDate)
     UTCend = toUTC(endDate)
   } catch {
-    console.log("toUTC Failed with startDate: " + startDate + " endDate: " + endDate);
+    console.log("toUTC Failed with startDate: " + startDate + " endDate: " + endDate)
     return
   }
 
   fetch("https://api.pioupiou.fr/v1/archive/1339?start=" + UTCstart + "&stop=" + UTCend)
     .then(response => {
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+          throw new Error(`HTTP error! Status: ${response.status}`)
       }
-      return response.json();
+      return response.json()
     })
     .then(data => {
-      // Use the 'data' object, which contains the response from the API
       windData = data
-      drawCharts();
+      drawCharts()
     })
     .catch(error => {
-      console.error('Fetch error:', error);
+      console.error('Fetch error:', error)
     });
 }
 
-let testF;
-
-function fetchFordcastData(){
+function fetchForecastData() {
   fetch("https://api.openweathermap.org/data/2.5/forecast?lat=47.769291&lon=8.968063&units=metric&appid=e3cc74ea38feb7a798ae46719958f346")
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return response.json();
-  })
-  .then(forecastData => {
-    // Use the 'data' object, which contains the response from the API
-    addForecastToWindData(forecastData)
-  })
-  .catch(error => {
-    console.error('Fetch error:', error);
-  });
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`)
+      }
+      return response.json()
+    })
+    .then(forecastData => {
+      addForecastToWindData(forecastData)
+    })
+    .catch(error => {
+      console.error('Fetch error:', error)
+    });
 }
 
 function addForecastToWindData(forecastData) {
@@ -644,7 +616,7 @@ function getPenalty(deg) {
 }
 
 
-function intiLiveUpdate() {
+function initLiveUpdate() {
   var socket = io.connect('https://api.pioupiou.fr/v1/push');
 
   socket.on("connect", function () {
