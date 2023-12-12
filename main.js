@@ -59,6 +59,8 @@ function fetchWindData() {
     return
   }
 
+  console.log("https://api.pioupiou.fr/v1/archive/1339?start=" + UTCstart + "&stop=" + UTCend)
+
   fetch("https://api.pioupiou.fr/v1/archive/1339?start=" + UTCstart + "&stop=" + UTCend)
     .then(response => {
       if (!response.ok) {
@@ -166,12 +168,7 @@ function resetTimer() {
     }, 5000);
 }
 
-function drawCharts() {
-  if (windData.data.length == 0) {
-    console.log("No Data")
-    return
-  }
-
+function prepareData(windData) {
   let xValues = [];
   let yValues = [];
 
@@ -220,6 +217,22 @@ function drawCharts() {
     datasets.push(dataset)
   }
 
+  let data = {
+    datasets : datasets,
+    labels  : xValues
+  }
+
+ return data
+}
+
+function drawCharts() {
+  if (windData.data.length == 0) {
+    console.log("No Data")
+    return
+  }
+
+  const data = prepareData(windData)
+
   const chartAreaBackgroundColor = {
     id:'chartAreaBackgroundColor',
     beforeDraw(chart, args, plugins) {
@@ -261,10 +274,7 @@ function drawCharts() {
 
   myChart = new Chart(ctx, {
     type: "line",
-    data: {
-      labels: xValues,
-      datasets: datasets
-    },
+    data: data,
     options: {
       responsive: true,
       aspectRatio: 4,
