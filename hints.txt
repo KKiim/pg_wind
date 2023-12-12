@@ -7,3 +7,27 @@ Gute FlugTage und Fleuge:
 
 03.11.2023
     https://de.dhv-xc.de/flight/1798055 Zeolite                                    24 min 105 m
+
+
+
+
+
+// curl "http://api.pioupiou.fr/v1/archive/1339?start=2023-10&stop=2023-11"
+// curl "http://api.pioupiou.fr/v1/live/1339"
+
+/*
+
+let myData = {
+  "doc": "http://developers.pioupiou.fr/api/archive/",
+  "license": "http://developers.pioupiou.fr/data-licensing",
+  "attribution": "(c) contributors of the Pioupiou wind network <http://pioupiou.fr>",
+  "legend": ["time","latitude","longitude","wind_speed_min","wind_speed_avg","wind_speed_max","wind_heading","pressure"],
+  "units": ["utc","degrees","degrees","km/h","km/h","km/h","degrees","(deprecated)"],
+  "data": []
+}
+
+*/
+
+
+//********* */ 3.11 War eine Topflugtag! **********************
+
